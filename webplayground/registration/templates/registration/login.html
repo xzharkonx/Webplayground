@@ -1,0 +1,68 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Iniciar sesión{% endblock %}
+{% block content %}
+
+<!-- La vista que gestionará este Template ya viene por DEFAULT con
+Django, por lo tanto no es necesario y nos ahorra trabajo y tiempo. -->
+<!-- Hay que registar está app hasta arriba de nuestras apps
+para que esté por delante de las del administrador y así las considere primero. -->
+<!-- Ahora solo reiniciaremos la app -->
+<style>.errorlist{color:red;}</style>
+<main role="main">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col-md-9 mx-auto mb-5">
+      {% if 'register' in request.GET %}
+      <p style="color:green;">Usuario registrado correctamente, ya puedes identificarte.</p>
+      {% endif %}
+
+      <!-- Para hacer este formulario, primero se mostro en un formulario generico como
+      {{ form.as_p }} y luego se vio que campos tenia para copiarlo y hacerlo de forma manual la cual
+      pudieramos editar como quisieramos, para ello lo realizamos como se muestra abajo. -->
+
+        <form action="" method="post">{% csrf_token %}
+          <h3 class="mb-4">Iniciar sesión</h3>
+          {% if form.non_field_errors %}
+            <p style="color:red">Usuario o contraseña incorrectos, prueba de nuevo.</p>
+          {% endif %}
+          <p>
+            <input type="text" name="username" autofocus maxlength="254" required
+              id="id_username" class="form-control" placeholder="Nombre de usuario"/>
+          </p>
+          <p>
+            <input type="password" name="password" required
+              id="id_password" class="form-control" placeholder="Contraseña"/>
+          </p>
+          <p><input type="submit" class="btn btn-primary btn-block" value="Acceder"></p>
+        </form>
+
+        <!-- Al hacer el login nos redirigira automaticamente a la url: 'accounts/profile/' la cuál
+        tenemos que crear para poder editar y crear el perfil y también tenemos que crear
+        nuestro template y las views, así como crear un modelo para el perfil de los usuarios. -->
+        
+        <!-- También podemos definir urls de redireccionamiento en settigns.py como:
+        LOGIN_REDIRECT_URL = 'home' -->
+        <!-- Para que al acceder nos redirija a la url 'home' (inicio de nuestra web) en vez
+        de que nos dirija por DEFAULT a 'accounts/profile/' (pero esto se cambia luego y se quitara
+        LOGIN_REDIRECT_URL para que nos redirija al perfil, ya es cosa de como se quiera poner) -->
+
+        <!-- Has aquí ya se habrá acabado así de rápido lo minimo para registrarse -->
+        <!-- Lo que seguiría podría ser editar el template base para mostrar una url con la que podrámos
+        acceder y también salir de la cuenta (lo de salir de la cuenta va despues) considerando que
+        hayamos accedido o no, dependiendo de eso, que nos muestre si podemos acceder o salir. -->
+
+        <!-- Se agrega este enlace que nos permitirá restaurar la contraseña a partir de nuestro correo -->
+        <!-- Solo será necesario colocar los 4 templates que son:
+        Formulario de solicitud de reseteo de contraseña: password_reset_form.html 
+        Mensaje de solicitud de restauración de contraseña hecho: password_reset_done.html
+        Formulario de reseteo de contraseña: password_reset_confirm.html
+        Mensaje de exito de restauración completada: password_reset_complete.html -->
+        <p>
+          ¿Ha olidado su clave? Puede restaurarla  <a href="{% url 'password_reset' %}">aquí</a> .
+        </p>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}

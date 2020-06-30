@@ -1,0 +1,90 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Perfiles{% endblock %}
+{% block content %}
+<style>.profile-avatar{float:left;width:4rem;height:4rem}.profile-data{padding-left:4.5rem;padding-top:.4rem;}</style>
+<main role="main">
+  <div class="container">
+    <div class="row mt-3">
+      <div class="col-md-9 mx-auto mb-5">
+        <h2>Perfiles</h2>
+        <div class="row">
+          {% for profile in profile_list %}
+            <div class="col-md-4 mt-2 mb-3 ">
+              <div class="row p-1">
+                <div class="col-md-12">
+                  {% if profile.avatar %}
+                    <img src="{{profile.avatar.url}}" class="img-fluid profile-avatar">
+                  {% else %}
+                    <img src="{% static 'registration/img/no-avatar.jpg' %}" class="img-fluid profile-avatar">
+                  {% endif %}
+                  <p class="profile-data">
+                    <b>{{profile.user|truncatechars:"16"}}</b>{% if profile.user.is_superuser %}<small> Administrador</small>{% endif %}<br>
+                    
+                    <!-- Aquí es donde le indicamos la url para que vaya a la vista de detalle del perfil
+                    filtrandolo por el nombre de usuario y se lo pasamos -->
+                    <a href="{% url 'profiles:detail' profile.user %}">Ver perfil</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+
+        </div>
+        <!-- Menú de paginación -->
+        <!-- Documentación con bootstrap: https://getbootstrap.com/docs/4.0/components/pagination/ -->
+        <!-- Documentación de Django con páginación: https://docs.djangoproject.com/en/3.1/topics/pagination/ -->
+        <!-- Entonces is_paginated nos sirve para saber si debemos mostrar la páginación,
+        es decir, si por página ponemos 10 elementos y no tenemos 10 elementos, entonces
+        no tiene caso poner la páginación -->
+        {% if is_paginated %}
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+            <!-- Todo lo referente al paginador se gestiona automaticamenten en el objeto
+            page_obj que contiene diferentes atributos para trabajar con la paginación -->
+
+            <!-- Para ir hacia atrás en la páginación -->
+            <!-- Para saber si hay una página anterior  con page_obj.has_previous -->
+            {% if page_obj.has_previous %}
+              <li class="page-item ">
+                 <!-- Si existe la página anterior recuperaremos ese número de página con page_obj.next_page_number
+                y se lo enviaremos como parameto para que lo reciba -->
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">&laquo;</a>
+              </li>
+            {% endif %}
+            <!-- Aquí va el bucle que va recorriendo toda las páginas. -->
+            <!-- Se iterara en un for con el atributo paginator.page_range que contará el número de páginas que tendrá
+            este paginador -->
+            {% for i in paginator.page_range %}
+              <!-- Con el atributo page_obj.number lo compararemos con el número de númeración
+              que estamos haciendo el el for para saber si estamos navegando por la página
+              activa y luego simplemente mostrar la página haciendo la estructura. -->
+              <li class="page-item {% if page_obj.number == i %}active{% endif %}">
+                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+              </li>
+            {% endfor %}
+            <!-- Para ir hacia adelante en la páginación -->
+            <!-- Para saber si hay una página despues  con page_obj.has_next -->
+            {% if page_obj.has_next %}
+              <li class="page-item ">
+                <!-- Si existe la página despues recuperaremos ese número de página con page_obj.next_page_number
+                y se lo enviaremos como parameto para que lo reciba -->
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled">
+                <a class="page-link" href="#" tabindex="-1">&raquo;</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock %}
